@@ -137,22 +137,26 @@ export default class Lilypad extends Extension {
 
         this._indicator.track_hover = true
 
-        this._indicator.connect('button-press-event', (actor, event) => {            
+        const _onClick = (event) => {
             switch (event.get_button()) {
                 // do not show menu on left click
                 case Clutter.BUTTON_PRIMARY:
                     if (!this._updateIndicatorVisibility())     // indicator is hidden
                         break;
- 
-                    this._toggleIcons();
-                    this._toggleMenu();
-                    break;
+
+                this._toggleIcons();
+                this._toggleMenu();
+                break;
                 case Clutter.BUTTON_MIDDLE:
                     this._toggleMenu();
                     break;
             }
             return Clutter.EVENT_PROPAGATE;
-        });
+        }
+
+        this._indicator._clickGesture.connect('recognize', _onClick);
+
+        this._indicator.connect('button-press-event', (actor, event) => _onClick(event));
 
         this._indicator.connect('touch-event', (actor, event) => {
             // only handle initial tap
